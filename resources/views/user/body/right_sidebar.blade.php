@@ -179,6 +179,12 @@ $users = App\Models\User::where('role', 'user')->where('id', '!=', Auth::id())->
     </div>
     
     <!-- online friends -->
+    @php
+    $onlineFriends = App\Models\User::where('role', 'user')
+        ->where('id', '!=', Auth::id())
+        ->where('is_online', true)
+        ->get();
+@endphp
     <div class="box p-5 px-6 border1 dark:bg-dark2">
         
         <div class="flex justify-between text-black dark:text-white">
@@ -188,118 +194,70 @@ $users = App\Models\User::where('role', 'user')->where('id', '!=', Auth::id())->
 
         <div class="grid grid-cols-6 gap-3 mt-4">
 
-            <a href="timeline.html"> 
+        @foreach($onlineFriends as $friend)
+            <a href="#"> 
                 <div class="w-10 h-10 relative">
-                    <img src="{{ $assetBase }}/images/avatars/avatar-2.jpg" alt="" class="w-full h-full absolute inset-0 rounded-full">
+                    <img src="{{ $friend->photo ? asset('upload/user_images/'.$friend->photo) : asset('upload/no_image.jpg') }}" alt="{{ $friend->name }}" class="w-full h-full absolute inset-0 rounded-full">
                     <div class="absolute bottom-0 right-0 m-0.5 bg-green-500 rounded-full w-2 h-2"></div>
                 </div> 
             </a>
-            <a href="timeline.html"> 
-                <div class="w-10 h-10 relative">
-                    <img src="{{ $assetBase }}/images/avatars/avatar-3.jpg" alt="" class="w-full h-full absolute inset-0 rounded-full">
-                    <div class="absolute bottom-0 right-0 m-0.5 bg-green-500 rounded-full w-2 h-2"></div>
-                </div>
-            </a>
-            <a href="timeline.html">  
-                <div class="w-10 h-10 relative">
-                    <img src="{{ $assetBase }}/images/avatars/avatar-4.jpg" alt="" class="w-full h-full absolute inset-0 rounded-full">
-                    <div class="absolute bottom-0 right-0 m-0.5 bg-green-500 rounded-full w-2 h-2"></div>
-                </div> 
-            </a>
-            <a href="timeline.html"> 
-                <div class="w-10 h-10 relative">
-                    <img src="{{ $assetBase }}/images/avatars/avatar-5.jpg" alt="" class="w-full h-full absolute inset-0 rounded-full">
-                    <div class="absolute bottom-0 right-0 m-0.5 bg-green-500 rounded-full w-2 h-2"></div>
-                </div> 
-            </a>
-            <a href="timeline.html"> 
-                <div class="w-10 h-10 relative">
-                    <img src="{{ $assetBase }}/images/avatars/avatar-6.jpg" alt="" class="w-full h-full absolute inset-0 rounded-full">
-                    <div class="absolute bottom-0 right-0 m-0.5 bg-green-500 rounded-full w-2 h-2"></div>
-                </div> 
-            </a>
-            <a href="timeline.html"> 
-                <div class="w-10 h-10 relative">
-                    <img src="{{ $assetBase }}/images/avatars/avatar-7.jpg" alt="" class="w-full h-full absolute inset-0 rounded-full">
-                    <div class="absolute bottom-0 right-0 m-0.5 bg-green-500 rounded-full w-2 h-2"></div>
-                </div> 
-            </a>
+        @endforeach
 
         </div>
 
         
     </div>
 
-    <!-- Pro Members -->
-    <div class="box p-5 px-6 border1 dark:bg-dark2">
-        
-        <div class="flex justify-between text-black dark:text-white">
-            <h3 class="font-bold text-base"> Pro Members </h3>
-        </div>
+<!-- Pro Members -->
 
-        <div class="relative capitalize font-normal text-sm mt-4 mb-2" tabindex="-1" uk-slider="autoplay: true;finite: true">
+@php
+    use Illuminate\Support\Facades\DB;
+    use App\Models\User;
 
-            <div class="overflow-hidden uk-slider-container">
-            
-                <ul class="-ml-2 uk-slider-items w-[calc(100%+0.5rem)]">
-                    
-                    <li class="w-1/2 pr-2">
-                    <a href="timeline.html"> 
+    $topUsers = User::select('users.*', DB::raw('(SELECT COUNT(*) FROM follows WHERE follows.following_id = users.id) AS followers_count'))
+            ->where('users.role', 'user')
+            ->orderByDesc(DB::raw('(SELECT COUNT(*) FROM follows WHERE follows.following_id = users.id)'))
+            ->take(2)
+            ->get();
+@endphp
+
+<div class="box p-5 px-6 border1 dark:bg-dark2">
+    <div class="flex justify-between text-black dark:text-white">
+        <h3 class="font-bold text-base"> Pro Members </h3>
+    </div>
+
+    <div class="relative capitalize font-normal text-sm mt-4 mb-2" tabindex="-1" uk-slider="autoplay: true;finite: true">
+        <div class="overflow-hidden uk-slider-container">
+            <ul class="-ml-2 uk-slider-items w-[calc(100%+0.5rem)]">
+                @foreach($topUsers as $user)
+                <li class="w-1/2 pr-2">
+                    <a href="timeline.html">
                         <div class="flex flex-col items-center shadow-sm p-2 rounded-xl border1">
-                            <a href="timeline.html"> 
+                            <a href="timeline.html">
                                 <div class="relative w-16 h-16 mx-auto mt-2">
-                                    <img src="{{ $assetBase }}/images/avatars/avatar-5.jpg" alt="" class="h-full object-cover rounded-full shadow w-full">
+                                    <img src="{{ $user->photo ? asset('upload/user_images/'.$user->photo) : asset('upload/no_image.jpg') }}" alt="{{ $user->name }}" class="h-full object-cover rounded-full shadow w-full">
                                 </div>
                             </a>
                             <div class="mt-5 text-center w-full">
-                                <a href="timeline.html"> <h5 class="font-semibold"> Martin Gray</h5> </a>
-                                <div class="text-xs text-gray-400 mt-0.5 font-medium"> 12K Followers</div>
+                                <a href="timeline.html"> <h5 class="font-semibold"> {{ $user->name }}</h5> </a>
+                                <div class="text-xs text-gray-400 mt-0.5 font-medium"> {{ $user->followers_count }} Followers</div>
                                 <button type="button" class="bg-secondery block font-semibold mt-4 py-1.5 rounded-lg text-sm w-full border1"> Follow </button>
                             </div>
                         </div>
-                    
-                    </li>
-                    <li class="w-1/2 pr-2">
-                        <div class="flex flex-col items-center shadow-sm p-2 rounded-xl border1">
-                            <a href="timeline.html"> 
-                                <div class="relative w-16 h-16 mx-auto mt-2">
-                                    <img src="{{ $assetBase }}/images/avatars/avatar-4.jpg" alt="" class="h-full object-cover rounded-full shadow w-full">
-                                </div>
-                            </a> 
-                            <div class="mt-5 text-center w-full">
-                                <a href="timeline.html"> <h5 class="font-semibold"> Alexa Park</h5> </a>
-                                <div class="text-xs text-gray-400 mt-0.5 font-medium"> 12K Followers</div>
-                                <button type="button" class="bg-secondery block font-semibold mt-4 py-1.5 rounded-lg text-sm w-full border1"> Follow </button>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="w-1/2 pr-2">
-                        <div class="flex flex-col items-center shadow-sm p-2 rounded-xl border1">
-                            <a href="timeline.html"> 
-                                <div class="relative w-16 h-16 mx-auto mt-2">
-                                    <img src="{{ $assetBase }}/images/avatars/avatar-4.jpg" alt="" class="h-full object-cover rounded-full shadow w-full">
-                                </div>
-                            </a> 
-                            <div class="mt-5 text-center w-full">
-                                <a href="timeline.html"> <h5 class="font-semibold"> James Lewis</h5> </a>
-                                <div class="text-xs text-gray-400 mt-0.5 font-medium"> 15K Followers</div>
-                                <button type="button" class="bg-secondery block font-semibold mt-4 py-1.5 rounded-lg text-sm w-full border1"> Follow </button>
-                            </div>
-                        </div>
-                    </li>
-                
+                    </a>
+                </li>
+                @endforeach
+            </ul>
 
-                </ul>
-
-                <button type="button" class="absolute -translate-y-1/2 bg-slate-100 rounded-full top-1/2 -left-4 grid w-9 h-9 place-items-center dark:bg-dark3"  uk-slider-item="previous"> <ion-icon name="chevron-back" class="text-2xl"></ion-icon></button>
-                <button type="button" class="absolute -right-4 -translate-y-1/2 bg-slate-100 rounded-full top-1/2 grid w-9 h-9 place-items-center dark:bg-dark3" uk-slider-item="next"> <ion-icon name="chevron-forward" class="text-2xl"></ion-icon></button>
-
-            </div>
-        
+            <button type="button" class="absolute -translate-y-1/2 bg-slate-100 rounded-full top-1/2 -left-4 grid w-9 h-9 place-items-center dark:bg-dark3" uk-slider-item="previous"> <ion-icon name="chevron-back" class="text-2xl"></ion-icon></button>
+            <button type="button" class="absolute -right-4 -translate-y-1/2 bg-slate-100 rounded-full top-1/2 grid w-9 h-9 place-items-center dark:bg-dark3" uk-slider-item="next"> <ion-icon name="chevron-forward" class="text-2xl"></ion-icon></button>
         </div>
-
-
     </div>
+</div>
+
+
+
+
 
 
 
