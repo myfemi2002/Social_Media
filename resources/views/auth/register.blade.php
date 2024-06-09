@@ -1,7 +1,6 @@
 @php
-    $assetBase = asset('frontend/assets/');
+$assetBase = asset('frontend/assets/');
 @endphp
-
 <!DOCTYPE html>
 <html lang="en">
    <!-- Fri, 07 Jun 2024 21:11:20 GMT -->
@@ -37,7 +36,8 @@
                   <p class="text-sm text-gray-700 font-normal">If you already have an account, <a href="{{ route('login') }}" class="text-blue-700">Login here!</a></p>
                </div>
                <!-- form -->
-               <form method="POST" action="{{ route('register') }}" class="space-y-7 text-sm text-black font-medium dark:text-white"  uk-scrollspy="target: > *; cls: uk-animation-scale-up; delay: 100 ;repeat: true">@csrf
+               <form method="POST" action="{{ route('register') }}" class="space-y-7 text-sm text-black font-medium dark:text-white"  uk-scrollspy="target: > *; cls: uk-animation-scale-up; delay: 100 ;repeat: true">
+                  @csrf
                   <div class="grid grid-cols-2 gap-4 gap-y-7">
                      <!-- first name -->
                      <div class="col-span-2">
@@ -45,6 +45,11 @@
                         <div class="mt-2.5">
                            <input id="text" type="text" name="name" autofocus="" placeholder="First name" required="" class="!w-full !rounded-lg !bg-transparent !shadow-sm !border-slate-200 dark:!border-slate-800 dark:!bg-white/5"> 
                         </div>
+                        <small class="form-control-feedback">
+                        @error('name')
+                        <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                        </small>
                      </div>
                      <!-- email -->
                      <div class="col-span-2">
@@ -52,6 +57,11 @@
                         <div class="mt-2.5">
                            <input id="email" name="email" type="email" placeholder="Email" required="" class="!w-full !rounded-lg !bg-transparent !shadow-sm !border-slate-200 dark:!border-slate-800 dark:!bg-white/5"> 
                         </div>
+                        <small class="form-control-feedback">
+                        @error('email')
+                        <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                        </small>
                      </div>
                      <!-- password -->
                      <div>
@@ -59,6 +69,12 @@
                         <div class="mt-2.5">
                            <input id="password" type="password" name="password" placeholder="***"  class="!w-full !rounded-lg !bg-transparent !shadow-sm !border-slate-200 dark:!border-slate-800 dark:!bg-white/5">  
                         </div>
+                        <small>minimum of 8 digit as password</small>
+                        <small class="form-control-feedback">
+                        @error('password')
+                        <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                        </small>
                      </div>
                      <!-- Confirm Password -->
                      <div>
@@ -66,21 +82,61 @@
                         <div class="mt-2.5">
                            <input id="password_confirmation" type="password" name="password_confirmation"  placeholder="***"  class="!w-full !rounded-lg !bg-transparent !shadow-sm !border-slate-200 dark:!border-slate-800 dark:!bg-white/5">  
                         </div>
+                        <small>minimum of 8 digit as password</small>
+                        <small class="form-control-feedback">
+                        @error('password_confirmation')
+                        <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                        </small>
                      </div>
                      <div class="col-span-2">
                         <label class="inline-flex items-center" id="rememberme">
                         <input type="checkbox" id="accept-terms" class="!rounded-md accent-red-800" />
-                        <span class="ml-2">you agree to our <a href="#" class="text-blue-700 hover:underline">terms of use </a> </span>
+                        <span class="ml-2">you agree to our <a href="#" class="text-blue-700 hover:underline">terms of use</a></span>
                         </label>
                      </div>
                      <!-- submit button -->
                      <div class="col-span-2">
-                        <button type="submit" class="button bg-primary text-white w-full">Get Started</button>
+                        <button id="submitButton" type="submit" class="button bg-primary text-white w-full">Get Started</button>
                      </div>
+                     <script>
+                        // Wait for the DOM to fully load before executing the script
+                        document.addEventListener('DOMContentLoaded', function () {
+                          // Get references to the checkbox, submit button, and notification message
+                          const checkbox = document.getElementById('accept-terms');
+                          const submitButton = document.getElementById('submitButton');
+                          const notification = document.getElementById('notification');
+                        
+                          // Initial state: disable the submit button
+                          submitButton.disabled = true;
+                        
+                          // Function to update the button state based on the checkbox
+                          function updateButtonState() {
+                            submitButton.disabled = !checkbox.checked;
+                            // Hide the notification when checkbox is ticked
+                            if (checkbox.checked) {
+                              notification.classList.add('hidden');
+                            }
+                          }
+                        
+                          // Add an event listener to the checkbox to watch for changes
+                          checkbox.addEventListener('change', updateButtonState);
+                        
+                          // Handle form submission attempt
+                          submitButton.addEventListener('click', function(event) {
+                            if (!checkbox.checked) {
+                              // Prevent form submission if checkbox is not ticked
+                              event.preventDefault();
+                              // Show the notification message
+                              notification.classList.remove('hidden');
+                            }
+                          });
+                        
+                          // Call the function initially to set the correct state in case the checkbox is checked on page load
+                          updateButtonState();
+                        });
+                     </script>
                   </div>
-
-
-
                </form>
             </div>
          </div>
@@ -143,5 +199,5 @@
          localStorage.removeItem('theme')
       </script>
    </body>
-   <!-- Mirrored from demo.foxthemes.net/socialite-v3.0/form-register.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 07 Jun 2024 21:11:20 GMT -->
+   <!-- Fri, 07 Jun 2024 21:11:20 GMT -->
 </html>

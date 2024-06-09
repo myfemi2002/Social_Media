@@ -24,15 +24,9 @@
                     </a>
                 </li> 
                 <li>
-                    <a href="#">
-                        <img src="{{ $assetBase }}/images/icons/video.png" alt="messages" class="w-6">
-                        <span> video </span> 
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
+                    <a href="{{ route('user.profile') }}">
                         <img src="{{ $assetBase }}/images/icons/event.png" alt="messages" class="w-6">
-                        <span> event </span> 
+                        <span> My Profile </span> 
                     </a>
                 </li>
                 <li>
