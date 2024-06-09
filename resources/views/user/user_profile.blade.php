@@ -69,7 +69,7 @@
 
         <!-- tab user basic info -->
         <!-- <form id="profileForm"> -->
-        <form id="profileForm" method="POST" action="{{ route('profile.update') }}">
+        <form id="profileForm" method="POST" action="{{ route('user.profile.update') }}">
             @csrf
             <div class="space-y-6">
                 <div class="md:flex items-center gap-10">

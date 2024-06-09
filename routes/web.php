@@ -1,10 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FriendsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InstructorController;
@@ -73,6 +76,26 @@ Route::middleware(['auth','roles:user'])->group(function () {
         Route::post('/follow/{user}', [FollowController::class, 'follow'])->name('follow');
         Route::delete('/unfollow/{user}', [FollowController::class, 'unfollow'])->name('unfollow');
     });
+
+    // Route::prefix('posts')->controller(PostController::class)->group(function () {
+    //     Route::post('/store-post', 'storePost')->name('posts.store');
+    // });
+
+    // Route::prefix('posts')->group(function () {
+    //     Route::controller(PostController::class)->group(function () {
+    //         Route::get('/store-post', 'storePost')->name('posts.store');
+    //     });
+    // });
+
+    Route::prefix('posts')->controller(PostController::class)->group(function () {
+        // Route::get('/friends-list', 'showAllFriends')->name('friends.list');
+        Route::get('/store-post', 'storePost')->name('posts.store');
+
+        Route::post('post/{post}/comments', [CommentController::class, 'store'])->name('comments.store');
+        Route::post('comments/{comment}/replies', [ReplyController::class, 'store'])->name('replies.store');
+    });
+
+   
 
 
 

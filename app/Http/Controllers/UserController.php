@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use App\Models\User;
-use Illuminate\Http\Request;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Intervention\Image\ImageManager;
@@ -16,7 +17,10 @@ class UserController extends Controller
         
         // Retrieve the latest users with their photos
         $latestUsers = User::orderBy('created_at', 'desc')->take(10)->get();
-        return view('user.index', compact('latestUsers'));
+
+        $posts = Post::with('user', 'comments.replies.user', 'comments.user')->latest()->get();
+
+        return view('user.index', compact('latestUsers','posts'));
         
     }
 
